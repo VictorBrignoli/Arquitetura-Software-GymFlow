@@ -1,0 +1,47 @@
+@ExerciciosService_HostAddress = http://localhost:5002
+
+GET {{ExerciciosService_HostAddress}}/api/exercicios
+Accept: application/json
+
+###
+
+GET {{ExerciciosService_HostAddress}}/api/exercicios?grupo=peito
+Accept: application/json
+
+###
+
+GET {{ExerciciosService_HostAddress}}/api/exercicios/1
+Accept: application/json
+
+###
+
+POST {{ExerciciosService_HostAddress}}/api/exercicios
+Content-Type: application/json
+
+{
+  "nome": "Stiff com halteres",
+  "grupoMuscular": "Pernas",
+  "equipamento": "Halteres",
+  "nivelDificuldade": "Intermediario",
+  "descricao": "Descer os halteres rente às pernas com joelhos semiflexionados, alongando os posteriores."
+}
+
+###
+
+PUT {{ExerciciosService_HostAddress}}/api/exercicios/41
+Content-Type: application/json
+
+{
+  "nome": "Stiff com halteres",
+  "grupoMuscular": "Pernas",
+  "equipamento": "Halteres",
+  "nivelDificuldade": "Intermediario",
+  "descricao": "Descer os halteres rente às pernas com joelhos semiflexionados.",
+  "ativo": false
+}
+
+###
+
+GET {{ExerciciosService_HostAddress}}/health
+
+###

@@ -6,13 +6,12 @@ Back-end de um sistema de gestão de academia, construído com arquitetura de mi
 
 ### a. Propósito do sistema
 
-O GymFlow permite que uma academia cadastre seus alunos, mantenha um catálogo de exercícios, monte treinos personalizados e acompanhe a evolução física de cada aluno por meio de avaliações periódicas. O sistema também gera planos de treino com Inteligência Artificial, a partir do objetivo, do nível e da última avaliação física do aluno.
-
+O GymFlow permite que uma academia cadastre seus alunos, mantenha um catálogo de exercícios, monte treinos personalizados e acompanhe a evolução física de cada aluno por meio de avaliações periódicas.
 ### b. Quais são os usuários
 
 | Usuário | Descrição |
 |---|---|
-| **Instrutor** | Cadastra alunos e exercícios, monta e edita treinos, registra avaliações físicas e solicita treinos gerados por IA. |
+| **Instrutor** | Cadastra alunos e exercícios, monta e edita treinos e registra avaliações físicas. |
 | **Aluno** | Consulta seus treinos e o histórico de avaliações físicas. |
 | **Administrador** | Gerencia o catálogo de exercícios e ativa ou inativa cadastros de alunos. |
 
@@ -65,7 +64,6 @@ O GymFlow é composto por **4 microsserviços independentes**, todos criados a p
 | Comunicação | REST/JSON via `HttpClient` (`IHttpClientFactory`) |
 | Hospedagem | Render (um Web Service por microsserviço) |
 | Código-fonte | GitHub (repositório único, uma pasta por serviço) |
-| IA | API de LLM chamada pelo serviço de Treinos (provedor a definir), chave em variável de ambiente |
 
 ### Microsserviços
 
@@ -75,7 +73,7 @@ O GymFlow é composto por **4 microsserviços independentes**, todos criados a p
 | Item | Detalhe |
 |---|---|
 | Entidade | `Aluno`: Id, Nome, Email, DataNascimento, Objetivo, Nivel, PesoAtual, AlturaCm, MetaPeso, Ativo |
-| Endpoints | `GET /alunos`, `GET /alunos/{id}`, `POST /alunos`, `PUT /alunos/{id}`, `PATCH /alunos/{id}/medidas` |
+| Endpoints | `GET /api/alunos`, `GET /api/alunos/{id}`, `POST /api/alunos`, `PUT /api/alunos/{id}`, `PATCH /api/alunos/{id}/medidas` |
 | Chama outros serviços | Nenhum |
 | É chamado por | Treinos (busca 1), Avaliações (validação e alteração de dados) |
 
@@ -85,18 +83,18 @@ O GymFlow é composto por **4 microsserviços independentes**, todos criados a p
 | Item | Detalhe |
 |---|---|
 | Entidade | `Exercicio`: Id, Nome, GrupoMuscular, Equipamento, NivelDificuldade, Descricao, Ativo |
-| Endpoints | `GET /exercicios`, `GET /exercicios?grupo={grupo}`, `GET /exercicios/{id}`, `POST /exercicios` |
+| Endpoints | `GET /api/exercicios`, `GET /api/exercicios?grupo={grupo}`, `GET /api/exercicios/{id}`, `POST /api/exercicios`, `PUT /api/exercicios/{id}` |
 | Chama outros serviços | Nenhum |
-| É chamado por | Treinos (busca 2 e geração com IA) |
+| É chamado por | Treinos (busca 2) |
 
 #### 3. Treinos
-**Função:** monta e armazena os treinos dos alunos e gera treinos com IA. É o serviço que mais se integra com os outros.
+**Função:** monta e armazena os treinos dos alunos. É o serviço que mais se integra com os outros.
 
 | Item | Detalhe |
 |---|---|
 | Entidades | `Treino`: Id, AlunoId, Nome, DataCriacao, Ativo<br>`TreinoItem`: Id, TreinoId, ExercicioId, Series, Repeticoes, DescansoSegundos, Ordem |
-| Endpoints | `POST /treinos`, `GET /treinos/{id}`, `GET /treinos/aluno/{alunoId}`, `POST /treinos/{id}/itens`, `DELETE /treinos/{id}/itens/{itemId}`, `POST /treinos/gerar-ia` |
-| Chama outros serviços | Alunos, Exercícios, Avaliações (somente na geração com IA) |
+| Endpoints | `POST /api/treinos`, `GET /api/treinos/{id}`, `GET /api/treinos/aluno/{alunoId}`, `POST /api/treinos/{id}/itens`, `DELETE /api/treinos/{id}/itens/{itemId}` |
+| Chama outros serviços | Alunos, Exercícios |
 | É chamado por | Nenhum |
 
 #### 4. Avaliações Físicas
@@ -105,39 +103,31 @@ O GymFlow é composto por **4 microsserviços independentes**, todos criados a p
 | Item | Detalhe |
 |---|---|
 | Entidade | `Avaliacao`: Id, AlunoId, Data, Peso, PercentualGordura, Cintura, Quadril, Braco, Observacoes, Sincronizada |
-| Endpoints | `POST /avaliacoes`, `GET /avaliacoes/{id}`, `GET /avaliacoes/aluno/{alunoId}` |
+| Endpoints | `POST /api/avaliacoes`, `GET /api/avaliacoes/{id}`, `GET /api/avaliacoes/aluno/{alunoId}` |
 | Chama outros serviços | Alunos |
-| É chamado por | Treinos (geração com IA, para obter a última avaliação) |
+| É chamado por | Nenhum |
 
 ### Fluxo das integrações
 
 **Integração 1, busca simples (Treinos → Alunos)**
-1. `POST /treinos` recebe `alunoId` e nome do treino.
-2. Treinos chama `GET /alunos/{id}`.
+1. `POST /api/treinos` recebe `alunoId` e nome do treino.
+2. Treinos chama `GET /api/alunos/{id}`.
 3. Se o aluno não existe ou está inativo, retorna erro e não cria o treino.
 4. Ao consultar um treino, os dados do aluno (nome e objetivo) são buscados em Alunos na hora, sem cópia local.
 
 **Integração 2, busca simples (Treinos → Exercícios)**
-1. `POST /treinos/{id}/itens` recebe `exercicioId`, séries e repetições.
-2. Treinos chama `GET /exercicios/{id}`.
+1. `POST /api/treinos/{id}/itens` recebe `exercicioId`, séries e repetições.
+2. Treinos chama `GET /api/exercicios/{id}`.
 3. Se o exercício não existe ou está inativo, o item é rejeitado.
 4. Ao listar o treino, cada item é enriquecido com nome e grupo muscular vindos de Exercícios.
 
 **Integração 3, alteração de dados (Avaliações → Alunos)**
-1. `POST /avaliacoes` recebe `alunoId` e as medidas.
-2. Avaliações valida o aluno com `GET /alunos/{id}`.
+1. `POST /api/avaliacoes` recebe `alunoId` e as medidas.
+2. Avaliações valida o aluno com `GET /api/alunos/{id}`.
 3. A avaliação é salva no banco de Avaliações.
-4. Avaliações chama `PATCH /alunos/{id}/medidas` com o novo peso.
+4. Avaliações chama `PATCH /api/alunos/{id}/medidas` com o novo peso.
 5. Alunos atualiza o `PesoAtual` do cadastro.
 6. Se o `PATCH` falhar, a avaliação fica com `Sincronizada = false` e a sincronização é tentada novamente depois.
-
-**Geração de treino com IA (Treinos)**
-1. `POST /treinos/gerar-ia` recebe o `alunoId`.
-2. Treinos busca o aluno (Alunos), a última avaliação (Avaliações) e a lista de exercícios ativos (Exercícios).
-3. Monta o prompt com esses dados e envia à API de IA, pedindo a resposta em JSON e usando somente IDs de exercícios existentes.
-4. Valida o JSON retornado e descarta itens com `exercicioId` inválido.
-5. Salva o `Treino` e os `TreinoItem` e devolve o plano.
-6. Se a IA falhar, retorna erro tratado ou um treino-modelo padrão para o nível do aluno.
 
 ### Configuração (variáveis de ambiente)
 
@@ -145,10 +135,8 @@ O GymFlow é composto por **4 microsserviços independentes**, todos criados a p
 |---|---|---|
 | Treinos | `ALUNOS_URL` | URL base do serviço de Alunos |
 | Treinos | `EXERCICIOS_URL` | URL base do serviço de Exercícios |
-| Treinos | `AVALIACOES_URL` | URL base do serviço de Avaliações |
-| Treinos | `IA_API_KEY` | Chave da API de IA (nunca versionada) |
 | Avaliações | `ALUNOS_URL` | URL base do serviço de Alunos |
-| Avaliações, Treinos, Alunos, Exercícios | `ConnectionStrings__Default` | Caminho do arquivo SQLite |
+| Avaliações, Treinos, Alunos, Exercícios | `ConnectionStrings__DefaultConnection` | Caminho do arquivo SQLite |
 
 Portas locais sugeridas: Alunos `5001`, Exercícios `5002`, Treinos `5003`, Avaliações `5004`.
 
@@ -171,6 +159,5 @@ gymflow/
 
 ### Extras previstos (item 7 do enunciado)
 
-- **Integração com IA:** geração de treinos personalizados (`POST /treinos/gerar-ia`).
 - **Comunicação assíncrona:** migrar a integração 3 para uma fila de mensagens (evento `AvaliacaoRegistrada`), se o prazo permitir.
 - **Observabilidade:** logs estruturados e endpoint `/health` em cada serviço.
