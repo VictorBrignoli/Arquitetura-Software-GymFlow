@@ -1,0 +1,63 @@
+@AlunosService_HostAddress = http://localhost:5001
+
+GET {{AlunosService_HostAddress}}/api/alunos
+Accept: application/json
+
+###
+
+GET {{AlunosService_HostAddress}}/api/alunos?ativo=true
+Accept: application/json
+
+###
+
+GET {{AlunosService_HostAddress}}/api/alunos/1
+Accept: application/json
+
+###
+
+POST {{AlunosService_HostAddress}}/api/alunos
+Content-Type: application/json
+
+{
+  "nome": "Eduarda Martins",
+  "email": "eduarda.martins@email.com",
+  "dataNascimento": "2000-05-10",
+  "objetivo": "Hipertrofia",
+  "nivel": "Iniciante",
+  "pesoAtual": 58.4,
+  "alturaCm": 162,
+  "metaPeso": 62
+}
+
+###
+
+PUT {{AlunosService_HostAddress}}/api/alunos/5
+Content-Type: application/json
+
+{
+  "nome": "Eduarda Martins",
+  "email": "eduarda.martins@email.com",
+  "dataNascimento": "2000-05-10",
+  "objetivo": "Condicionamento",
+  "nivel": "Intermediario",
+  "pesoAtual": 59,
+  "alturaCm": 162,
+  "metaPeso": 60,
+  "ativo": true
+}
+
+###
+
+# Integração 3: o serviço de Avaliações chama esta rota com o novo peso.
+PATCH {{AlunosService_HostAddress}}/api/alunos/1/medidas
+Content-Type: application/json
+
+{
+  "pesoAtual": 70.2
+}
+
+###
+
+GET {{AlunosService_HostAddress}}/health
+
+###
