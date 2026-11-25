@@ -1,0 +1,58 @@
+@AvaliacoesService_HostAddress = http://localhost:5004
+
+GET {{AvaliacoesService_HostAddress}}/api/avaliacoes/1
+Accept: application/json
+
+###
+
+GET {{AvaliacoesService_HostAddress}}/api/avaliacoes/aluno/1
+Accept: application/json
+
+###
+
+# Integração 3: valida o aluno, salva e atualiza o PesoAtual no serviço de Alunos.
+POST {{AvaliacoesService_HostAddress}}/api/avaliacoes
+Content-Type: application/json
+
+{
+  "alunoId": 1,
+  "peso": 71.8,
+  "percentualGordura": 28.4,
+  "cintura": 80,
+  "quadril": 101,
+  "braco": 30,
+  "observacoes": "Avaliação mensal"
+}
+
+###
+
+# Aluno inativo (Diego) -> 400
+POST {{AvaliacoesService_HostAddress}}/api/avaliacoes
+Content-Type: application/json
+
+{
+  "alunoId": 4,
+  "peso": 70
+}
+
+###
+
+# Aluno inexistente -> 404
+POST {{AvaliacoesService_HostAddress}}/api/avaliacoes
+Content-Type: application/json
+
+{
+  "alunoId": 999,
+  "peso": 70
+}
+
+###
+
+# Reenvia avaliações com sincronizada = false
+POST {{AvaliacoesService_HostAddress}}/api/avaliacoes/sincronizar
+
+###
+
+GET {{AvaliacoesService_HostAddress}}/health
+
+###
