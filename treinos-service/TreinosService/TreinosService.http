@@ -1,0 +1,68 @@
+﻿@Treinos = http://localhost:5003
+@Exercicios = http://localhost:5002
+
+### 1. Treino do seed, enriquecido (alunoNome = Bruno Lima, exercicioNome, grupoMuscular)
+GET {{Treinos}}/api/treinos/1
+
+### 2. Treinos da Ana (aluno 1)
+GET {{Treinos}}/api/treinos/aluno/1
+
+### 3. Criar treino -> 201
+POST {{Treinos}}/api/treinos
+Content-Type: application/json
+
+{ "alunoId": 3, "nome": "Treino B - Costas e Bíceps" }
+
+### 4. Aluno inexistente -> 404
+POST {{Treinos}}/api/treinos
+Content-Type: application/json
+
+{ "alunoId": 999, "nome": "X" }
+
+### 5. Aluno inativo (Diego) -> 400
+POST {{Treinos}}/api/treinos
+Content-Type: application/json
+
+{ "alunoId": 4, "nome": "X" }
+
+### 6. Adicionar item -> 201 (use o id criado no teste 3)
+POST {{Treinos}}/api/treinos/3/itens
+Content-Type: application/json
+
+{ "exercicioId": 7, "series": 4, "repeticoes": 10, "descansoSegundos": 90 }
+
+### 7. Exercício inexistente -> 404
+POST {{Treinos}}/api/treinos/3/itens
+Content-Type: application/json
+
+{ "exercicioId": 999, "series": 3, "repeticoes": 12 }
+
+### 8a. Preparar: inativar o Burpee (exercício 40) no serviço de Exercícios
+PUT {{Exercicios}}/api/exercicios/40
+Content-Type: application/json
+
+{ "nome": "Burpee", "grupoMuscular": "Cardio", "equipamento": "Peso corporal", "nivelDificuldade": "Avancado", "descricao": "Agachar, levar os pés para trás, fazer uma flexão, voltar e saltar, em sequência.", "ativo": false }
+
+### 8b. Exercício inativo -> 400
+POST {{Treinos}}/api/treinos/3/itens
+Content-Type: application/json
+
+{ "exercicioId": 40, "series": 3, "repeticoes": 12 }
+
+### 9. Séries inválidas -> 400
+POST {{Treinos}}/api/treinos/3/itens
+Content-Type: application/json
+
+{ "exercicioId": 7, "series": 0, "repeticoes": 12 }
+
+### 10. Remover item -> 204 (rodar de novo -> 404)
+DELETE {{Treinos}}/api/treinos/1/itens/3
+
+# ### 11. Gerar com IA (aluno 1 tem avaliações no seed)
+# POST {{Treinos}}/api/treinos/gerar-ia
+# Content-Type: application/json
+
+{ "alunoId": 1 }
+
+### 12. Health
+GET {{Treinos}}/health
