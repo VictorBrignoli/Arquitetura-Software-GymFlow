@@ -7,9 +7,9 @@ Back-end de um sistema de gestão de academia, construído com arquitetura de mi
 | Serviço | URL base | Documentação interativa |
 |---|---|---|
 | Alunos | https://PREENCHER-alunos.onrender.com | `/scalar` |
-| Exercícios | https://PREENCHER-exercicios.onrender.com | `/scalar` |
-| Treinos | https://PREENCHER-treinos.onrender.com | `/scalar` |
-| Avaliações Físicas | https://PREENCHER-avaliacoes.onrender.com | `/scalar` |
+| Exercícios | https://gymflow-exercicios.onrender.com	 | `/scalar` |
+| Treinos | https://gymflow-treinos.onrender.com	 | `/scalar` |
+| Avaliações Físicas | https://gymflow-avaliacoes.onrender.com	 | `/scalar` |
 
 > Os serviços estão no plano gratuito do Render e "dormem" após alguns minutos sem acesso. O primeiro acesso a cada um pode levar cerca de 1 minuto.
 
