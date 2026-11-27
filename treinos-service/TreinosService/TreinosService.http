@@ -58,11 +58,24 @@ Content-Type: application/json
 ### 10. Remover item -> 204 (rodar de novo -> 404)
 DELETE {{Treinos}}/api/treinos/1/itens/3
 
-# ### 11. Gerar com IA (aluno 1 tem avaliações no seed)
-# POST {{Treinos}}/api/treinos/gerar-ia
-# Content-Type: application/json
+### 11a. Gerar com IA: Ana (aluna 1, tem avaliações) -> 201, geradoPorIa = true
+POST {{Treinos}}/api/treinos/gerar-ia
+Content-Type: application/json
 
 { "alunoId": 1 }
+
+### 11b. Gerar com IA: aluno inexistente -> 404
+POST {{Treinos}}/api/treinos/gerar-ia
+Content-Type: application/json
+
+{ "alunoId": 999 }
+
+### 11c. Gerar com IA: aluno inativo (Diego) -> 400
+POST {{Treinos}}/api/treinos/gerar-ia
+Content-Type: application/json
+
+{ "alunoId": 4 }
+
 
 ### 12. Health
 GET {{Treinos}}/health
