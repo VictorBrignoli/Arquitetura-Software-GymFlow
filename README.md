@@ -6,7 +6,7 @@ Back-end de um sistema de gestão de academia, construído com arquitetura de mi
 
 | Serviço | URL base | Documentação interativa |
 |---|---|---|
-| Alunos | https://PREENCHER-alunos.onrender.com | `/scalar` |
+| Alunos | https://gymflow-alunos.onrender.com| `/scalar` |
 | Exercícios | https://gymflow-exercicios.onrender.com	 | `/scalar` |
 | Treinos | https://gymflow-treinos.onrender.com	 | `/scalar` |
 | Avaliações Físicas | https://gymflow-avaliacoes.onrender.com	 | `/scalar` |
