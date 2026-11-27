@@ -52,13 +52,13 @@ namespace TreinosService.Controllers
             return Task.FromResult<IActionResult>(NoContent());
         });
 
-        //[Route("/api/treinos/gerar-ia")]
-        //[HttpPost]
-        //public Task<IActionResult> GerarComIa([FromBody] GerarTreinoIaDTO dto) => Tratar(async () =>
-        //{
-        //    var gerado = await _servTreino.GerarComIa(dto);
-        //    return Created($"/api/treinos/{gerado.Treino.Id}", gerado);
-        //});
+        [Route("/api/treinos/gerar-ia")]
+        [HttpPost]
+        public Task<IActionResult> GerarComIa([FromBody] GerarTreinoIaDTO dto) => Tratar(async () =>
+        {
+            var gerado = await _servTreino.GerarComIa(dto);
+            return Created($"/api/treinos/{gerado.Treino.Id}", gerado);
+        });
 
         // Mesmo mapeamento dos outros serviços: 404 / 503 / 400.
         private async Task<IActionResult> Tratar(Func<Task<IActionResult>> acao)
